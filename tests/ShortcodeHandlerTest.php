@@ -2,8 +2,16 @@
 
 class ShortcodeHandlerTest extends PHPUnit_Framework_TestCase {
 	public function setUp() {
-		$this->mock_post = (object) [ 'ID' => 123, 'post_title' => 'my item', 'post_content' => 'this is an item' ];
-		\Spies\mock_function( 'get_post' )->when_called->with( 123 )->will_return( $this->mock_post );
+		$this->mock_posts = [
+			123 => (object) [ 'ID' => 123, 'post_title' => 'my first item', 'post_content' => 'this is my first item' ],
+			124 => (object) [ 'ID' => 124, 'post_title' => 'my second item', 'post_content' => 'this is my second item' ],
+			125 => (object) [ 'ID' => 125, 'post_title' => 'my third item', 'post_content' => 'this is my third item' ],
+		];
+			\Spies\mock_function( 'get_post' )->when_called->will_return( function( $id ) {
+				if ( isset( $this->mock_posts[ $id ] ) ) {
+					return $this->mock_posts[ $id ];
+				}
+			} );
 		\Spies\mock_function( 'shortcode_atts' )->when_called->will_return( function( $pairs, $atts ) {
 			$atts = (array) $atts;
 			$out = array();
@@ -59,12 +67,48 @@ class ShortcodeHandlerTest extends PHPUnit_Framework_TestCase {
 	}
 
 	/**
-	 * @testdox get_markup_from_shortcode returns a the post content for each id
+	 * @testdox get_markup_from_shortcode returns a div with no classname if none is specified
+	 */
+	public function test_get_markup_from_shortcode_returns_a_div_with_no_classname_if_none_is_specified() {
+		$shortcode_handler = new \OtherPages\ShortcodeHandler();
+		$result = $shortcode_handler->get_markup_from_shortcode( [ 'ids' => '123' ] );
+		$this->assertThat( $result, $this->stringStartsWith( '<div class=""' ) );
+	}
+
+	/**
+	 * @testdox get_markup_from_shortcode returns a div with a classname if one is specified
+	 */
+	public function test_get_markup_from_shortcode_returns_a_div_with_a_classname_if_one_is_specified() {
+		$shortcode_handler = new \OtherPages\ShortcodeHandler();
+		$result = $shortcode_handler->get_markup_from_shortcode( [ 'ids' => '123', 'classname' => 'my-codes' ] );
+		$this->assertThat( $result, $this->stringStartsWith( '<div class="my-codes"' ) );
+	}
+
+	/**
+	 * @testdox get_markup_from_shortcode returns the post content for each id
 	 */
 	public function test_get_markup_from_shortcode_returns_the_post_content_for_each_id() {
 		$shortcode_handler = new \OtherPages\ShortcodeHandler();
 		$result = $shortcode_handler->get_markup_from_shortcode( [ 'ids' => '123' ] );
-		$this->assertThat( $result, $this->stringContains( $this->mock_post->post_content ) );
+		$this->assertThat( $result, $this->stringContains( $this->mock_posts[123]->post_content ) );
+	}
+
+	/**
+	 * @testdox get_markup_from_shortcode returns the post content for multiple ids
+	 */
+	public function test_get_markup_from_shortcode_returns_the_post_content_for_multiple_ids() {
+		$shortcode_handler = new \OtherPages\ShortcodeHandler();
+		$result = $shortcode_handler->get_markup_from_shortcode( [ 'ids' => '123,124,125' ] );
+		$this->assertThat( $result, $this->stringContains( $this->mock_posts[123]->post_content ) );
+		$this->assertThat( $result, $this->stringContains( $this->mock_posts[124]->post_content ) );
+		$this->assertThat( $result, $this->stringContains( $this->mock_posts[125]->post_content ) );
+	}
+
+	/**
+	 * @testdox get_markup_from_shortcode returns each post wrapped in a div
+	 */
+	public function test_get_markup_from_shortcode_returns_each_post_wrapped_in_a_div() {
+		$this->markTestIncomplete();
 	}
 }
 
