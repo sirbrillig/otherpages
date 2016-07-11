@@ -10,7 +10,7 @@ class ShortcodeHandler {
 		if ( empty( $markups ) ) {
 			return '';
 		}
-		return '<div>' . implode( ' ', $markups ) . '</div>';
+		return '<div class="' . $atts['classname'] . '">' . implode( ' ', $markups ) . '</div>';
 	}
 
 	private function get_shortcode_defaults() {
