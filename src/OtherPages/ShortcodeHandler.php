@@ -3,11 +3,7 @@ namespace OtherPages;
 
 class ShortcodeHandler {
 	public function get_markup_from_shortcode( $atts ) {
-		$atts = shortcode_atts( array(
-			'ids' => '',
-			'classname' => '',
-			'includefeaturedimage' => false,
-		), $atts );
+		$atts = shortcode_atts( $this->get_shortcode_defaults(), $atts );
 		$ids = explode( ',', $atts['ids'] );
 		$markups = array_map( array( $this, 'get_markup_for_id' ), $ids );
 		$markups = array_filter( $markups, array( $this, 'is_valid_markup' ) );
@@ -15,6 +11,14 @@ class ShortcodeHandler {
 			return '';
 		}
 		return '<div>' . implode( ' ', $markups ) . '</div>';
+	}
+
+	private function get_shortcode_defaults() {
+		return array(
+			'ids' => '',
+			'classname' => '',
+			'includefeaturedimage' => false,
+		);
 	}
 
 	private function get_markup_for_id( $id ) {
