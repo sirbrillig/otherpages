@@ -9,6 +9,8 @@
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  */
 
+require_once( dirname( __FILE__ ) . '/src/OtherPages/ShortcodeHandler.php' );
+
 class OtherPages {
 	protected static $instance = null;
 
