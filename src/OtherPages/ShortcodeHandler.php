@@ -26,7 +26,7 @@ class ShortcodeHandler {
 		if ( ! $post ) {
 			return null;
 		}
-		return $post->post_content;
+		return '<div>' . $post->post_content . '</div>';
 	}
 
 	private function is_valid_markup( $markup ) {

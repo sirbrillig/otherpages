@@ -108,7 +108,10 @@ class ShortcodeHandlerTest extends PHPUnit_Framework_TestCase {
 	 * @testdox get_markup_from_shortcode returns each post wrapped in a div
 	 */
 	public function test_get_markup_from_shortcode_returns_each_post_wrapped_in_a_div() {
-		$this->markTestIncomplete();
+		$shortcode_handler = new \OtherPages\ShortcodeHandler();
+		$result = $shortcode_handler->get_markup_from_shortcode( [ 'ids' => '123,124' ] );
+		$content = $this->mock_posts[124]->post_content;
+		$this->assertThat( $result, $this->matchesRegularExpression( "/<div>{$content}<\/div>/" ) );
 	}
 }
 
