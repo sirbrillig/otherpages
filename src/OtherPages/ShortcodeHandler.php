@@ -17,7 +17,6 @@ class ShortcodeHandler {
 		return array(
 			'ids' => '',
 			'classname' => '',
-			'includefeaturedimage' => false,
 		);
 	}
 
